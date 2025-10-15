@@ -16,7 +16,7 @@ phases:
 
   pre_build:
     commands:
-      - echo "Setting up variables"
+      - echo "Setting up environment variables"
       - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
       - REGION=${AWS_DEFAULT_REGION}
       - ECR_URI="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY}"
@@ -29,13 +29,13 @@ phases:
       - echo "Building React app"
       - npm ci
       - npm run build
-      - echo "Building docker image"
+      - echo "Building Docker image"
       - docker build -t ${ECR_URI}:${IMAGE_TAG} .
       - docker tag ${ECR_URI}:${IMAGE_TAG} ${ECR_URI}:latest
 
   post_build:
     commands:
-      - echo "Pushing images to ECR"
+      - echo "Pushing Docker images to ECR"
       - docker push ${ECR_URI}:${IMAGE_TAG}
       - docker push ${ECR_URI}:latest
       - echo "Preparing Kubernetes manifest"
